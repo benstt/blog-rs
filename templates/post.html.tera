@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,900;1,400;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="script.js" defer></script>
+    <title>does this change?</title>
+</head>
+<body>
+    <div id="container">
+        <div id="nav">
+            <div id="home">~/</div>
+            <div id="nav-links">
+                <ul>
+                    <li>--posts</li>
+					<li>--about</li>
+                </ul>
+            </div>
+        </div>
+		
+		<h1>{{ title }}</h1>
+        <div id="date">
+			<p><em>{{ date }}</em></p>
+        </div>
+
+        <div id="content">
+			{{ content }}
+        </div>
+
+        <div id="references">
+            <!-- Links must have an anchor -->
+			<hr />
+            <div id="links">
+				<p>Related: </p>
+				<ul>
+				{% for link in links %}
+					<li><strong>{{ link.title }}</strong>: <a href="{{ link.url }}">{{ link.url }}</a></li>
+				{% endfor %}
+				</ul>
+            </div>
+			<hr />
+        </div>
+
+        <div id="tags">
+			<footer>
+				<p>{{ tags }}</p>
+			</footer>
+        </div>
+    </div>
+</body>
+</html>
