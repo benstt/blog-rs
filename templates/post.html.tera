@@ -15,22 +15,22 @@
 <body>
     <div id="container">
         <div id="nav">
-            <div id="home">~/</div>
+            <div id="home"><a href="#">~/</a></div>
             <div id="nav-links">
                 <ul>
-                    <li>--posts</li>
-					<li>--about</li>
+					<li><a href="#">--posts</a></li>
+					<li><a href="#">--about</a></li>
                 </ul>
             </div>
         </div>
 		
-		<h1>{{ title }}</h1>
+		<h1>{{ post.title }}</h1>
         <div id="date">
-			<p><em>{{ date }}</em></p>
+			<p><em>{{ post.date }}</em></p>
         </div>
 
         <div id="content">
-			{{ content }}
+			<p>{{ post.content|safe }}</p>
         </div>
 
         <div id="references">
@@ -39,7 +39,7 @@
             <div id="links">
 				<p>Related: </p>
 				<ul>
-				{% for link in links %}
+				{% for link in post.links %}
 					<li><strong>{{ link.title }}</strong>: <a href="{{ link.url }}">{{ link.url }}</a></li>
 				{% endfor %}
 				</ul>
@@ -49,7 +49,7 @@
 
         <div id="tags">
 			<footer>
-				<p>{{ tags }}</p>
+				<p>{{ post.tags }}</p>
 			</footer>
         </div>
     </div>
