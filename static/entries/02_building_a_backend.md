@@ -5,7 +5,8 @@ In my first blog post, *Creating a basic on-prem personal blog*, I noted what wa
 
 I thought that building the web server itself would take ages to do. But that was before trying to the the backend. Gosh, I really did think that was going to be super easy.
 
-Originally, I was going to use **Django** or **Gin Gonic** for that, but I googled a bit for other frameworks I could use, to get a broader look. The only framework I've used in the past was **Spring**, so I though I could use it. Not that I loved using it, but I liked how I could simply put an *annotation* above a method to specify the HTTP method used, like in, say *Flask* or *Express.js*. For example, let's say we have a Controller class that handles one route:
+Originally, I was going to use **Django** or **Gin Gonic** for that, but I googled a bit for other frameworks I could use, to get a broader look. The only framework I've used in the past was **Spring**, so I though I could use it. Not that I loved using it, but I liked how I could simply put an *annotation* above a method to specify the HTTP method used, like in, say *Flask* or *Express.js*. 
+For example, let's say we have a *Controller* class that handles one route:
 
 ```java
 @Controller
@@ -27,7 +28,8 @@ There are a **ton** of web frameworks in almost every single programming languag
 
 ## Rocket, and how it's basically just an excuse to learn Rust
 
-Soon after I stumbled upon **Rocket**, an HTTP framework written in **Rust**. I have heard of it before, but never actually gave it a look. Thought that writing a thing in Rust would only complicate things and not actually getting my stuff done *(I'm looking at you, Actix)*. Looking at its webpage, the first thing I saw was an example of use:
+Soon after I stumbled upon **Rocket**, an HTTP framework written in **Rust**. I have heard of it before, but never actually gave it a look. Thought that writing a thing in Rust would only complicate things and not actually getting my stuff done *(I'm looking at you, Actix)*. 
+Looking at its webpage, the first thing I saw was an example of use:
 
 ```rust 
 #[macro_use] extern crate rocket;
@@ -43,8 +45,8 @@ fn rocket() -> _ {
 }
 ```
 
-... exactly what I was looking for! (almost) No boilerplates, no confusing class hierarchy, and I can route things with one macro above a function.
-You could even read it without knowing Rust and still understand what's going on. You define a function that returns a string formatted with the name and age passed to the URL. How great is that? Then you simply mount it to your *main* function (in this case Rocket provides a wrapping with `rocket()`) and that's it!
+... exactly what I was looking for! (almost) No boilerplates, no confusing class hierarchy, and I can route things with one macro above a function. You could even read it without knowing Rust and still understand what's going on.
+You define a function that returns a string formatted with the name and age passed to the URL. How great is that? Then you simply mount it to your *main* function (in this case Rocket provides a wrapping with `rocket()`) and that's it!
 
 I always have loved the Rust ecosystem and community. Everything is *Open Source*, everyone is willing to help you with any trouble you're having and everything is **very well documented**. But learning it is somewhat difficult. Every person I've known that is using Rust have dropped it at least 2 o 3 times before trying to learn it again. And that happened to me... at least 4 times. So I guess **Rocket** is an excuse to give Rust another try. :)
 

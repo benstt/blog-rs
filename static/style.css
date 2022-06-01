@@ -11,7 +11,8 @@ body {
     background-color: #ffffff;
     font-family: 'Merriweather', serif;
     font-size: 18px;
-    padding: 35px 250px;
+    padding: 35px 200px;
+	text-align: justify;
 }
 
 h1 {
@@ -51,8 +52,9 @@ code {
 }
 
 pre {
-	font-weight: 700;
+	display: block;
 	padding: 20px 0;
+	white-space: pre-wrap;
 }
 
 pre code {
@@ -111,6 +113,7 @@ pre code {
 
 #links {
     padding-bottom: 32px;
+	text-align: left;
 }
 
 #links strong {
@@ -120,12 +123,18 @@ pre code {
 #email {
 	color: #2f3542;
 	font-size: 16px;
+	text-align: center;
 }
 
 @media (max-width: 575px) {
     body {
+		min-width: 100%;
         padding: 35px 50px;
     }
+
+	pre {
+		overflow-x: scroll;
+	}
 
     #nav {
         align-items: center;
@@ -145,6 +154,10 @@ pre code {
         width: 80%;
     }
 
+	#links {
+		text-align: center;
+	}
+
     #links ul li {
         list-style: none;
         padding: 3px;
@@ -157,7 +170,7 @@ pre code {
 }
 
 
-@media screen and (max-width: 900px) and (min-width: 550px) {
+@media screen and (max-width: 900px) and (min-width: 575px) {
     body {
         padding: 35px 150px;
     }
@@ -165,6 +178,6 @@ pre code {
 
 @media screen and (min-width: 1500px) {
     body {
-        padding: 35px 500px;
+        padding: 35px 420px;
     }
 }
