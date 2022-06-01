@@ -46,10 +46,10 @@ fn rocket() -> _ {
 ... exactly what I was looking for! (almost) No boilerplates, no confusing class hierarchy, and I can route things with one macro above a function.
 You could even read it without knowing Rust and still understand what's going on. You define a function that returns a string formatted with the name and age passed to the URL. How great is that? Then you simply mount it to your *main* function (in this case Rocket provides a wrapping with `rocket()`) and that's it!
 
-I always have loved the Rust ecosystem and community. Everything is *Open Source*, everyone is willing to help you with any trouble you're having and everything is **very well documented**. But learning it is somewhat difficult. Every person I've known that is using Rust have dropped it at least 2 o 3 times before trying to learn it again. And that happened to me... at least 4 times. So I guess **Rocket** is an excuse to learn Rust again. :)
+I always have loved the Rust ecosystem and community. Everything is *Open Source*, everyone is willing to help you with any trouble you're having and everything is **very well documented**. But learning it is somewhat difficult. Every person I've known that is using Rust have dropped it at least 2 o 3 times before trying to learn it again. And that happened to me... at least 4 times. So I guess **Rocket** is an excuse to give Rust another try. :)
 
 Starting wasn't difficult. Rocket's official tutorial covers up the basics to get you up and running building stuff. Then it's about adding more and more stuff in top of that stuff. Basically stuff of stuff. 
-One of the first things I wanted to get working was the ability to enter a url like **/post/<id>** and see a post coming up in the page. At first glance, I thought I could write the post and then convert it to HTML to let Rocket render it. Not difficult, but that sure get tedious after doing so 300 times. Just when I was about to make a simple tool to let me put Markdown into an HTML template, I found **Tera**, a templating engine for Rust, based on the **Jinja2/Django** templating.
+One of the first things I wanted to get working was the ability to enter a url like **/post/<id>** and see a post coming up in the page. At first glance, I thought I could write the post and then manually convert it to HTML to let Rocket render it. Not difficult, but that sure gets tedious after doing so 300 times. Just when I was about to make a simple tool to let me put Markdown into an HTML template, I found **Tera**, a templating engine for Rust, based on the **Jinja2/Django** templating.
 
 Let's imagine you have a way to store Posts:
 
@@ -90,7 +90,9 @@ then all is left to do es combine the two of them to render it to the page:
 ```html
 <body>
 	<h1>{{ post.title }}</h1>
-	<p>{{ post.content }}</p>
+	<!-- "safe" basically tells Tera 
+	to render the markdown correctly -->
+	<p>{{ post.content | safe }}</p>
 </body>
 ```
 
@@ -102,16 +104,16 @@ That's actually the most basic thing you can do in Tera. You could even do thing
 This approach lets me focus more on the actual writing of the posts rather than manually converting and fixing stuff between each one. Combine that with a CommonMark to HTML converter like **pulldown_cmark** and you're done, just write *.md* files and let the API handle everything for you.
 
 ## OK, but X does that and even more. Why not use it?
-I really don't know. I just liked how Rocket handle things. Plus I think is a great way of learn Rust. 
-As I said in my previous post, I like learning stuff by trying and breaking everything, and this is exactly what I wanted in the first place. Rust is a though language to learn, and if you don't have any meaningful reason on why to do it then it becomes impossible to do so. Rocket may be the thing that **launches** me (pun intended) onto learning more and more about the language. 
+I really don't know. I just liked how Rocket handle things. Plus I think it's a great way of learn Rust. 
+As I said in my previous post, I like learning stuff by trying and breaking everything, and this is exactly what I wanted in the first place. Rust is a tough language to learn, and if you don't have any meaningful reason on why to do it then it becomes impossible to do so. Rocket may be the thing that **launches** me (pun intended) onto learning more and more about the language. 
 
-In the end, all of this is just programming practice and a learning experience. Getting fun is the solid reason why this blog exists, no matter what tool I use as long as I have fun :)
+In the end, all of this is just programming practice and a learning experience. Getting fun is the solid reason why this blog exists, no matter what tool I use, as long as I have fun :)
 
 ---
 Related:
 /* * Creating a basic on-prem personal blog: #creating-an-on-prem-personal-blog */
-* **Spring**: https://spring.io/ 
-* **Actix Web**: https://actix.rs/
+* **Spring (Java Backend Framework)**: https://spring.io/ 
+* **Actix Web (Rust Web Framework)**: https://actix.rs/
 * **Rocket.rs**: https://rocket.rs/
 ---
 

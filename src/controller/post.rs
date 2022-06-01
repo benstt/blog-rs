@@ -22,7 +22,7 @@ impl<'a> Post<'a> {
     /// Generates a Post from a markdown string.
     /// Takes the entire source text as input and splits every tag
     /// into its own field to the struct.
-    pub fn from_markdown(markdown: &'a str) -> Self {
+    fn from_markdown(markdown: &'a str) -> Self {
         let parser = Parser::new(&markdown);
 
         let mut title = String::new();
