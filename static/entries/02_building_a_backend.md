@@ -6,7 +6,7 @@ In my first blog post, *Creating a basic on-prem personal blog*, I noted what wa
 I thought that building the web server itself would take ages to do. But that was before trying to the the backend. Gosh, I really did think that was going to be super easy.
 
 Originally, I was going to use **Django** or **Gin Gonic** for that, but I googled a bit for other frameworks I could use, to get a broader look. The only framework I've used in the past was **Spring**, so I though I could use it. Not that I loved using it, but I liked how I could simply put an *annotation* above a method to specify the HTTP method used, like in, say *Flask* or *Express.js*. 
-For example, let's say we have a *Controller* class that handles one route:
+For example, let's say we have a Controller class that handles one route:
 
 ```java
 @Controller
@@ -61,17 +61,6 @@ struct Post {
 	title: &'static str,
 	content: &'static str,
 }
-
-// Call this function every time the user routes to /my_post
-#[get("/my_post")]
-fn get_post() -> Template {
-	let post = Post {
-		title: "my #1 post!!",
-		content: "hey this is my first post :) heck yea"
-	};
-
-	Template::render("the_html_file_path", post)
-}
 ```
 
 and you have the following HTML:
@@ -89,6 +78,18 @@ and you have the following HTML:
 
 then all is left to do es combine the two of them to render it to the page:
 
+```rust
+// Call this function every time the user routes to /my_post
+#[get("/my_post")]
+fn get_post() -> Template {
+	let post = Post {
+		title: "my #1 post!!",
+		content: "hey this is my first post :) heck yea"
+	};
+
+	Template::render("the_html_file_path", context! { post })
+}
+```
 ```html
 <body>
 	<h1>{{ post.title }}</h1>
@@ -98,7 +99,9 @@ then all is left to do es combine the two of them to render it to the page:
 </body>
 ```
 
-< ![Result](../images/02_post_example.png) >
+and... voilà!
+
+![Result](../images/02_post_example.png)
 
 That's it! You've created an HTML page from a *template* and data from a Rust struct. 
 That's actually the most basic thing you can do in Tera. You could even do things like **for loops**, **condition checking** and even **define macros**.
