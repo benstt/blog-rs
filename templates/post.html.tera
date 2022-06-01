@@ -9,6 +9,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,900;1,400;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
+	<!-- <link rel="stylesheet" -->
+      <!-- href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css"> -->
+	<link rel="stylesheet" href="code-colorscheme.min.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+	<script>hljs.highlightAll();</script>
     <script src="script.js" defer></script>
     <title>does this change?</title>
 </head>
@@ -52,6 +57,10 @@
 				<p>{{ post.tags }}</p>
 			</footer>
         </div>
+
+		<footer id="email">
+			<p>Benjamín García Roqués > benjamingarciaroques@gmail.com</p>
+		</footer>
     </div>
 </body>
 </html>

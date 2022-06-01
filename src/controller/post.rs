@@ -1,6 +1,7 @@
 use crate::Link;
 use rocket::serde::Serialize;
-use pulldown_cmark::{html, Parser, Event::{Start, End}, Tag::{Heading, Paragraph, Emphasis, List}, HeadingLevel::H1};
+use pulldown_cmark::{html, Parser, Event::{Start, End}, Tag::{Heading, Paragraph, Emphasis, List, CodeBlock}, HeadingLevel::H1};
+use rocket_dyn_templates::handlebars::html_escape;
 use regex::Regex;
 use std::ops::Range;
 
@@ -64,7 +65,7 @@ impl<'a> Post<'a> {
                     } 
 
                     for line in text.to_string().lines() {
-                        // I seriously don't know, but if I don't put
+                        // I honestly don't know, but if I don't put
                         // '</br>\n' the thing doesn't get correctly formatted.
                         // So annoying.
                         content.push_str(&format!("{}</br>\n", line));
@@ -84,9 +85,20 @@ impl<'a> Post<'a> {
                     }
                 },
                 End(Paragraph) => content.push_str("\n"),
+                Start(CodeBlock(_)) => {
+                    // Eliminate lines containing "```"
+                    let code = text
+                        .lines()
+                        .filter(|l| !l.starts_with("```"))
+                        .fold(String::new(), |s, l| s + l + "\n");
+                    let code = format!("<pre><code>{}</code></pre></br>\n", html_escape(&code));
+
+                    content.push_str(&code);
+                },
                 _ => (),
             }
         }
+
 
         let related_sections = 
             &markdown[related_section_range.start .. related_section_range.end]

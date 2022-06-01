@@ -46,6 +46,19 @@ a:hover {
     font-weight: 700;
 }
 
+code {
+	font-weight: 700;
+}
+
+pre {
+	font-weight: 700;
+	padding: 20px 0;
+}
+
+pre code {
+	tab-size: 4;
+}
+
 #container {
     align-items: center;
     display: flex;
@@ -102,6 +115,11 @@ a:hover {
 
 #links strong {
     color: black;
+}
+
+#email {
+	color: #2f3542;
+	font-size: 16px;
 }
 
 @media (max-width: 575px) {

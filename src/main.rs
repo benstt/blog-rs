@@ -14,6 +14,13 @@ fn get_css() -> content::RawCss<String> {
     content::RawCss(contents)
 }
 
+#[get("/code-colorscheme.min.css")]
+fn get_colorscheme() -> content::RawCss<String> {
+    let contents = fs::read_to_string("static/code-colorscheme.min.css").unwrap();
+
+    content::RawCss(contents)
+}
+
 #[get("/script.js")]
 fn get_javascript() -> content::RawJavaScript<String> {
     let contents = fs::read_to_string("static/script.js").unwrap();
@@ -24,7 +31,7 @@ fn get_javascript() -> content::RawJavaScript<String> {
 // TODO: put this into a separate file
 #[get("/posts")]
 fn get_posts() -> Template {
-    let content_file = fs::read_to_string("static/entries/01_creating_a_personal_blog.md")
+    let content_file = fs::read_to_string("static/entries/02_building_a_backend.md")
         .expect("No such file or directory");
 
     let post = Post::new(&content_file);
@@ -36,6 +43,7 @@ fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![get_posts])
         .mount("/", routes![get_css])
+        .mount("/", routes![get_colorscheme])
         .mount("/", routes![get_javascript])
         .attach(Template::fairing())
 }
