@@ -1,6 +1,6 @@
 use crate::Link;
 use rocket::serde::Serialize;
-use pulldown_cmark::{Parser, Event::{Start, Text}, Tag::{Heading, Paragraph, Emphasis, List}, HeadingLevel::H1, CowStr::Borrowed};
+use pulldown_cmark::{html, Parser, Event::{Start, End}, Tag::{Heading, Paragraph, Emphasis, List}, HeadingLevel::H1};
 use regex::Regex;
 use std::ops::Range;
 
@@ -14,7 +14,108 @@ pub struct Post<'a> {
 }
 
 impl<'a> Post<'a> {
-    pub fn new(title: &'a str, date: &'a str, content: &'a str, links: Vec<Link<'a>>, tags: &'a str) -> Self {
+    pub fn new(markdown: &'a str) -> Self {
+        Self::from_markdown(&markdown)
+    }
+
+    /// Generates a Post from a markdown string.
+    /// Takes the entire source text as input and splits every tag
+    /// into its own field to the struct.
+    pub fn from_markdown(markdown: &'a str) -> Self {
+        let parser = Parser::new(&markdown);
+
+        let mut title = String::new();
+        let mut date = String::new();
+        let mut content = String::new();
+        let mut links: Vec<Link> = Vec::new();
+        let mut tags = String::new();
+
+        let mut related_section_range: Range<usize> = Range { start: 0, end: 0 };
+
+        // Check every event of the parser and get its range of text
+        // Example:
+        // > Start(Paragraph), Range[4..54]
+        // Means that we stumbled upon the start of a paragraph, and the text
+        // is located at positions 4 to 54 in the str provided to the parser
+        for (e, r) in parser.into_offset_iter() {
+            let text = &markdown[r.start .. r.end];
+
+            match &e {
+                Start(Heading(H1, _, _)) => {
+                    let the_title = &text 
+                        .split("# ")
+                        .collect::<Vec<&str>>();
+
+                    title.push_str(&the_title[1]);
+                },
+                Start(Heading(_, _, _)) => {
+                    content.push_str(&text);
+                    content.push_str("\n\n");
+                },
+                Start(Paragraph) => {
+                    // Don't append the date or 'related:' to the text
+                    let date_text = "*Written on";
+                    let related_text = "Related:";
+                    if text.starts_with(date_text) || text.starts_with(related_text) { continue }
+
+                    if text.starts_with("#") {
+                        tags.push_str(&text);
+                        continue;
+                    } 
+
+                    for line in text.to_string().lines() {
+                        // I seriously don't know, but if I don't put
+                        // '</br>\n' the thing doesn't get correctly formatted.
+                        // So annoying.
+                        content.push_str(&format!("{}</br>\n", line));
+                    }
+                },
+                Start(Emphasis) => {
+                    if text.starts_with("*Written on") {
+                        let text_without_asterisks = &markdown[r.start+1 .. r.end-1];
+                        date.push_str(&text_without_asterisks);
+                    }
+                },
+                Start(List(_)) => {
+                    if text.starts_with("*") {
+                        related_section_range = r;
+                    } else {
+                        content.push_str(&text);
+                    }
+                },
+                End(Paragraph) => content.push_str("\n"),
+                _ => (),
+            }
+        }
+
+        let related_sections = 
+            &markdown[related_section_range.start .. related_section_range.end]
+                .split("\n")
+                .take_while(|l| !l.is_empty());
+
+        let src_re: Regex = Regex::new(r#"\*\s(.*):\s"#).unwrap();
+        let link_re: Regex = Regex::new(r#"https?://..*"#).unwrap();
+
+        // Check every line to match a title and a URL
+        for link in related_sections.clone().into_iter() {
+            // Look for matches with the regex
+            let src_cap = src_re.captures(link).expect("Post has no references");
+            let link_cap = link_re.captures(link).expect("Post has no links");
+            
+            // Here get(1) corresponds to the capture without the '*' and ':'
+            // For example, capturing "* My site: " would return:
+            // Some(Captures({
+            //     0: Some("* My site: "),
+            //     1: Some("My site"), <- this is the capture that we want
+            // })),
+            let title = src_cap.get(1).map_or("", |m| m.as_str());
+            // Remove the first and last two asterisks of the title
+            let title = &title[2..title.len()-2];
+            let url = link_cap.get(0).map_or("", |m| m.as_str());
+
+            links.push(Link::new(title, url));
+        }
+        
         // The content must be converted into HTML, as it may have
         // any tags whithin it.
         //
@@ -23,75 +124,12 @@ impl<'a> Post<'a> {
         // Then it'll simply render as is.
         // If we instead convert that to HTML then the .tera file
         // will understand the formatting and show the correct output.
-        let content = String::from(content);
-        let html = Self::convert_to_html(&content);
+        let content = Self::convert_to_html(&content);
 
         Self {
-            title: title.to_string(),
-            date: date.to_string(),
-            content: html,
-            links,
-            tags: tags.to_string()
-        }
-    }
-
-    // pub fn new(markdown: &str) -> Self {
-
-    // }
-
-    /// Generates a Post from a markdown string.
-    /// Takes the entire source text as input and splits every tag
-    /// into its own field to the struct.
-    pub fn from_markdown(markdown: &'a str) -> Self {
-        let parser = Parser::new(&markdown);
-
-        let mut heading = String::new();
-        let mut date = String::new();
-        let mut contents = String::new();
-        let mut links: Vec<Link> = Vec::new();
-        let mut tags = String::new();
-
-        let link_regex: Regex = Regex::new(r#"^.*: <https?://..*>"#).unwrap();
-        for cap in link_regex.captures_iter(&markdown) {
-            let string = cap.get(0).map_or("", |m| m.as_str());
-            let link = Link::new("", string); 
-            links.push(link);
-        }
-
-        // workaround, passing an empty vector to the heading
-        // won't let me compile
-        let _v = vec![""];
-        for (e, r) in parser.into_offset_iter() {
-            let text = &markdown[r.start .. r.end];
-
-            match &e {
-                Start(Heading(H1, None, _v)) if _v.is_empty() => {
-                    let title = &text 
-                        .split("# ")
-                        .collect::<Vec<&str>>();
-
-                    heading.push_str(&title[1]);
-                },
-                Start(Paragraph) => {
-                    if text.starts_with("#") {
-                        tags.push_str(&text);
-                    } else {
-                        contents.push_str(&text);
-                    }
-                },
-                Start(Emphasis) => {
-                    if text.starts_with("Written on") {
-                        date.push_str(&text);
-                    }
-                },
-                _ => (),
-            }
-        }
-
-        Self {
-            title: heading,
+            title,
             date,
-            content: contents,
+            content,
             links,
             tags
         }
@@ -102,73 +140,8 @@ impl<'a> Post<'a> {
     fn convert_to_html(markdown: &str) -> String {
         let parser = Parser::new(&markdown);
 
-        // TODO: all of this stuff should be on from_markdown()
-        let mut heading = String::new();
-        let mut date = String::new();
-        let mut contents = String::new();
-        let mut links: Vec<Link> = Vec::new();
-        let mut tags = String::new();
-
-        let mut related_section_range: Range<usize> = Range { start: 0, end: 0 };
-        // workaround, passing an empty vector to the heading
-        // won't let me compile
-        let _v = vec![""];
-        for (e, r) in parser.into_offset_iter() {
-            let text = &markdown[r.start .. r.end];
-
-            match &e {
-                Start(Heading(H1, None, _v)) if _v.is_empty() => {
-                    let title = &text 
-                        .split("# ")
-                        .collect::<Vec<&str>>();
-
-                    heading.push_str(&title[1]);
-                },
-                Start(Paragraph) => {
-                    if text.starts_with("#") {
-                        tags.push_str(&text);
-                    } else {
-                        contents.push_str(&text);
-                    }
-                },
-                Start(Emphasis) => {
-                    if text.starts_with("Written on") {
-                        date.push_str(&text);
-                    }
-                },
-                Start(List(None)) => related_section_range = r,
-                _ => (),
-            }
-        }
-
-        let related_sections = 
-            &markdown[related_section_range.start .. related_section_range.end].split("\n");
-
-        let link_regex: Regex = Regex::new(r#"^.*: <https?://..*>"#).unwrap();
-        // TODO: check regex for every line in the related section
-        // for link in related_sections {
-
-        // }
-        let caps = link_regex.captures("* Google: <https://google.com>").unwrap();
-        let text = caps.get(0).map_or("", |m| m.as_str());
-        // for cap in link_regex.captures_iter(&related_sections) {
-        //     let string = cap.get(0).map_or("", |m| m.as_str());
-        //     println!("string: {}", string);
-        //     let link = Link::new("", string); 
-        //     links.push(link);
-        // }
-
-        // e: Start(Heading(H1, None, []))
-        // e: Text(Borrowed("hey, this is a header"))
-        // e: End(Heading(H1, None, []))
-        // e: Start(Paragraph)
-        // e: Text(Borrowed("and this is a paragraph"))
-        // e: End(Paragraph)
-
-        // parser.for_each(|e| println!("e: {:?}", e));
-
         let mut html_output = String::new();
-        // html::push_html(&mut html_output, parser);
+        html::push_html(&mut html_output, parser);
 
         html_output
     }

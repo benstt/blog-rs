@@ -30,7 +30,7 @@
         </div>
 
         <div id="content">
-			<p>{{ post.content | safe }}</p>
+			{{ post.content | safe }}
         </div>
 
         <div id="references">

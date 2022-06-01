@@ -2,17 +2,10 @@
 use self::controller::post::*;
 use self::controller::link::*;
 use rocket_dyn_templates::{Template, context};
-use rocket::{serde::Serialize, response::content, http};
+use rocket::response::content;
 use std::fs;
 
 pub mod controller;
-
-// // TODO: put this into a separate file
-// #[derive(Serialize, Debug)]
-// pub struct Link<'a> {
-//     title: &'a str, 
-//     url: &'a str,
-// }
 
 #[get("/style.css")]
 fn get_css() -> content::RawCss<String> {
@@ -31,34 +24,10 @@ fn get_javascript() -> content::RawJavaScript<String> {
 // TODO: put this into a separate file
 #[get("/posts")]
 fn get_posts() -> Template {
-    // let link1 = Link::new("Let's build a Database in C", "https://cstack.github.io/db_tutorial/");
-    // let link2 = Link::new("Pelado Nerd", "https://www.twitch.tv/rwxrob");
-    // let link3 = Link::new("rwxrob", "https://www.twitch.tv/rwxrob");
+    let content_file = fs::read_to_string("static/entries/01_creating_a_personal_blog.md")
+        .expect("No such file or directory");
 
-    // let links = vec![link1, link2, link3];
-
-    let content = "# hey, this is a header
-and this is a paragraph
-this is a long paragraph
-a really long one
-
-yeah
-this has *emphasis* and this one is **strong**
-
-it is a really long paragraph
-...well it's not actually but heck yea
-
-ok these are tags
-
-#devops #tryingstuff #ok
-
-and these are links
-* Google with HTTPS: <https://google.com>
-* Google with HTTP: <http://google.com>
-* Youtube: <https://youtube.com>
-";
-    let post = Post::new("my #1 post!!", "", content, vec![], "");
-
+    let post = Post::new(&content_file);
     Template::render("post", context! { post })
 }
 
