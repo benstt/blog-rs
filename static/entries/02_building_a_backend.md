@@ -105,6 +105,14 @@ and... voilà!
 
 That's it! You've created an HTML page from a *template* and data from a Rust struct. 
 That's actually the most basic thing you can do in Tera. You could even do things like **for loops**, **condition checking** and even **define macros**.
+For example, here's what I kind of use to render the links in the **Related** section:
+```html
+<ul>
+{% for link in post.links %}
+	<li><a href="{{ link.url }}">{{ link.title }}</a></li>
+{% endfor %}
+</ul>
+```
 
 This approach lets me focus more on the actual writing of the posts rather than manually converting and fixing stuff between each one. Combine that with a CommonMark to HTML converter like **pulldown_cmark** and you're done, just write *.md* files and let the API handle everything for you.
 
